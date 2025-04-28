@@ -1,0 +1,336 @@
+/*====================================
+  Variables
+====================================*/
+:root {
+    /* Colors */
+    --bg: #0f1115;
+    --tile: #1c1e24;
+    --accent: #3b82f6;
+    --highlight: #2c2f36;
+    --text: #e5e7eb;
+  
+    /* Spacing scale */
+    --space-xxs: 0.25rem;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+  
+    /* Border & radius */
+    --radius: 0.625rem; /* 10px */
+    --border: 1px solid var(--highlight);
+  
+    /* Table column proportions */
+    --col-size: 10%;
+    --col-date: 15%;
+    --col-actions: 5rem;
+  
+    /* Transitions */
+    --transition: 0.3s;
+  }
+  
+  /*====================================
+    Reset & Base
+  ====================================*/
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  /*====================================
+    Header
+  ====================================*/
+  header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md);
+    background: var(--tile);
+    border-bottom: var(--border);
+  }
+  
+  header h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 1.5rem;
+    color: var(--accent);
+  }
+  
+  /*====================================
+    Layout: Sidebar + Content
+  ====================================*/
+  main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  .sidebar {
+    width: 250px;
+    padding: var(--space-md);
+    background: var(--tile);
+    border-right: var(--border);
+    overflow-y: auto;
+  }
+  
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    overflow: hidden;
+  }
+  
+  /*====================================
+    Breadcrumb & Folder Tree
+  ====================================*/
+  .breadcrumb {
+    font-size: 0.9rem;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  
+  .breadcrumb span {
+    margin: 0 var(--space-xs);
+    color: var(--highlight);
+  }
+  
+  .folder-tree {
+    list-style: none;
+  }
+  
+  .folder-tree li + li {
+    margin-top: var(--space-xxs);
+  }
+  
+  .folder-tree a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--radius);
+    color: var(--text);
+    text-decoration: none;
+    transition: background var(--transition);
+  }
+  
+  .folder-tree a:hover,
+  .folder-tree a.active {
+    background: var(--highlight);
+  }
+  
+  /*====================================
+    Controls & Buttons
+  ====================================*/
+  .controls {
+    display: flex;
+    gap: var(--space-xs);
+  }
+  
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-lg);
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  
+  .btn:hover {
+    background: #2563eb;
+  }
+  
+  /*====================================
+    Upload Area
+  ====================================*/
+  #uploadArea {
+    padding: var(--space-xl);
+    border: 2px dashed var(--highlight);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--highlight);
+    transition: background var(--transition);
+  }
+  
+  #uploadArea.dragover {
+    background: rgba(59, 130, 246, 0.1);
+  }
+  
+  /*====================================
+    Explorer-Style File Table
+  ====================================*/
+  .file-list {
+    background: var(--tile);
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .file-list table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  
+  .file-list thead {
+    background: var(--tile);
+  }
+  
+  .file-list thead th {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text);
+    border-bottom: var(--border);
+    white-space: nowrap;
+  }
+  
+  .file-list thead th.name    { text-align: left;                 }
+  .file-list thead th.size    { text-align: right; width: var(--col-size);   }
+  .file-list thead th.date    { text-align: right; width: var(--col-date);   }
+  .file-list thead th.actions { text-align: right; width: var(--col-actions);}
+  
+  /* Body rows */
+  .file-list tbody tr {
+    transition: background var(--transition);
+    border-bottom: var(--border);
+  }
+  
+  .file-list tbody tr:last-of-type {
+    border-bottom: none;
+  }
+  
+  .file-list tbody tr:hover {
+    background: var(--hover-bg);
+  }
+  
+  .file-list tbody td {
+    padding: var(--space-xs) var(--space-sm);
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+  
+  .file-list tbody td.name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+  
+  .file-list tbody td.name a {
+    color: var(--text);
+    text-decoration: none;
+    flex-shrink: 1;
+  }
+  
+  .file-list tbody td.name a:hover {
+    color: var(--accent);
+  }
+  
+  .file-list tbody td.size,
+  .file-list tbody td.date {
+    text-align: right;
+    font-feature-settings: 'tnum';
+  }
+  
+  /* Actions column */
+  .file-list tbody td.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-xxs);
+  }
+  
+  .file-list tbody td.actions .deleteBtn,
+  .file-list tbody td.actions a {
+    padding: 0;
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    transition: color var(--transition);
+  }
+  
+  .file-list tbody td.actions .deleteBtn:hover,
+  .file-list tbody td.actions a:hover {
+    color: #60a5fa;
+  }
+  
+  /* Global link reset in table */
+  .file-list a {
+    text-decoration: none;
+  }
+  
+  /*====================================
+    Loading Overlay
+  ====================================*/
+  #loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 17, 21, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-lg);
+    z-index: 9999;
+  }
+  
+  .spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.3125rem solid var(--highlight);
+    border-top: 0.3125rem solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /*====================================
+    Responsiveness
+  ====================================*/
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    main     { flex-direction: column; }
+  }
+  
+  @media (max-width: 576px) {
+    .file-list thead th.size,
+    .file-list tbody td.size,
+    .file-list thead th.actions,
+    .file-list tbody td.actions {
+      display: none;
+    }
+  }
+  

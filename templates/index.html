@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servidor NAS</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div id="loadingOverlay" class="hidden">
+  <div class="spinner"></div>
+  <p>Carregando...</p>
+</div>
+
+<header>
+  <h1><i class="fas fa-hdd"></i> NAS</h1>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <nav aria-label="Navegação entre pastas">
+      <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Raiz</a>
+        {% if current_path %}
+          {% for seg in current_path.split('/') %}
+            <span>/</span>
+            <a href="{{ url_for('index', req_path=current_path.split('/')[:loop.index]|join('/')) }}">{{ seg }}</a>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <ul class="folder-tree">
+        {% for f in folders %}
+        <li>
+          <a href="{{ url_for('index', req_path=f.path) }}" class="{% if f.path==current_path %}active{% endif %}">
+            <i class="fas fa-folder"></i> {{ f.name }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </aside>
+
+  <section class="content">
+    <div class="controls">
+      <label class="btn" for="fileInput" aria-label="Enviar arquivos"><i class="fas fa-upload"></i> Enviar</label>
+      <button class="btn" id="newFolderBtn" aria-label="Criar nova pasta"><i class="fas fa-folder-plus"></i> Nova Pasta</button>
+    </div>
+
+    <div id="uploadArea">Arraste arquivos ou clique em "Enviar"</div>
+    <input type="file" id="fileInput" name="file" multiple hidden>
+
+    <div class="file-list">
+      <table>
+        <thead>
+          <tr>
+            <th class="name">Nome</th>
+            <th class="size">Tamanho</th>
+            <th class="date">Data</th>
+            <th class="actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td class="name">
+              <div class="label">
+                {% if item.is_dir %}
+                  <i class="fas fa-folder"></i>
+                  <a href="{{ url_for('index', req_path=(current_path~'/'~item.name)|trim('/')) }}">{{ item.name }}</a>
+                {% else %}
+                  <i class="fas fa-file"></i>
+                  <a href="{{ url_for('download', file_path=(current_path~'/'~item.name)|trim('/')).replace('/download/', '/files/') }}">{{ item.name }}</a>
+                {% endif %}
+              </div>
+            </td>
+            <td class="size">{{ (item.size/1024/1024) | round(2) }} MB</td>
+            <td class="date">{{ item.mtime.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td class="actions">
+              {% if item.is_dir %}
+                <button class="deleteBtn" data-path="{{ (current_path~'/'~item.name)|trim('/') }}" title="Excluir pasta"><i class="fas fa-trash-alt"></i></button>
+              {% else %}
+                <a href="{{ url_for('download', file_path=(current_path~'/'~item.name)|trim('/')).replace('/download/', '/files/') }}" title="Baixar"><i class="fas fa-download"></i></a>
+                <button class="deleteBtn" data-path="{{ (current_path~'/'~item.name)|trim('/') }}" title="Excluir arquivo"><i class="fas fa-trash-alt"></i></button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
