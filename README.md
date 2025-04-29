@@ -42,8 +42,8 @@ Uma interface web leve e responsiva para gerenciar arquivos em um dispositivo An
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/LucasFelip/servidor-nas-termux.git
-   cd servidor-nas-termux
+   git clone https://github.com/LucasFelip/py-nas.git
+   cd py-nas
    ```
 
 2. **Configure a pasta de armazenamento**  
@@ -72,7 +72,7 @@ servidor-nas-termux/
 │   │   └── style.css   # Estilos CSS modernos
 │   ├── js/
 │   │   └── main.js     # Upload, download e exclusão via Fetch API
-│   └── favicon.ico     # Ícone do navegador
+│   └── favicon.ico     # Ícone do navegador - ele bão foi adicionado por questão de configuração do termux
 └── README.md           # Este arquivo
 ```
 
