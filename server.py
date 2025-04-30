@@ -3,6 +3,9 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 import shutil
+import mimetypes
+import pandas as pd
+from docx import Document
 
 # Configurações
 ROOT_FOLDER = '/data/data/com.termux/files/home/storage/shared/NAS'
@@ -160,12 +163,68 @@ def preview(file_path):
     if not os.path.exists(full_path):
         abort(404)
 
+    _, ext = os.path.splitext(full_path)
+    ext = ext.lower()
+
     try:
-        with open(full_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        return jsonify({ 'name': os.path.basename(full_path), 'content': content })
-    except Exception:
-        return jsonify({ 'error': 'Não é possível visualizar este arquivo.' }), 400
+        # Arquivos de texto simples
+        if ext in {'.txt', '.md', '.json', '.py', '.log'}:
+            with open(full_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return jsonify({
+                'type': 'text',
+                'name': os.path.basename(full_path),
+                'content': content
+            })
+
+        # Arquivo CSV
+        elif ext == '.csv':
+            df = pd.read_csv(full_path)
+            return jsonify({
+                'type': 'table',
+                'name': os.path.basename(full_path),
+                'headers': list(map(str, df.columns)),
+                'rows': df.fillna('').astype(str).values.tolist()
+            })
+
+        # Arquivo XLSX
+        elif ext == '.xlsx':
+            df = pd.read_excel(full_path, engine='openpyxl')
+            return jsonify({
+                'type': 'table',
+                'name': os.path.basename(full_path),
+                'headers': list(map(str, df.columns)),
+                'rows': df.fillna('').astype(str).values.tolist()
+            })
+
+        # Arquivo DOCX
+        elif ext == '.docx':
+            doc = Document(full_path)
+            content = '\n'.join([p.text for p in doc.paragraphs if p.text.strip()])
+            return jsonify({
+                'type': 'text',
+                'name': os.path.basename(full_path),
+                'content': content
+            })
+
+        # Arquivo PDF
+        elif ext == '.pdf':
+            return jsonify({
+                'type': 'pdf',
+                'name': os.path.basename(full_path),
+                'url': url_for('download', file_path=file_path).replace('/download/', '/files/')
+            })
+
+        # Outros formatos
+        else:
+            return jsonify({
+                'error': f'Visualização de arquivos \"{ext}\" não é suportada.'
+            }), 400
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Erro ao processar o arquivo: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, threaded=True)
