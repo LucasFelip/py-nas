@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, render_template, redirect, url_for, abort
+from flask import Flask, request, send_from_directory, render_template, redirect, url_for, abort, jsonify
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
@@ -116,6 +116,56 @@ def delete(file_path):
     except Exception as e:
         abort(500, description=str(e))
     return redirect(request.referrer or '/')
+
+@app.route('/rename', methods=['POST'])
+def rename():
+    old_path = request.form.get('old_path')
+    new_name = secure_filename(request.form.get('new_name'))
+    if not old_path or not new_name:
+        abort(400, description='Dados inválidos.')
+
+    full_old = secure_path(old_path)
+    new_path = os.path.join(os.path.dirname(full_old), new_name)
+
+    try:
+        os.rename(full_old, new_path)
+    except Exception as e:
+        abort(500, description=str(e))
+    return ('', 204)
+
+@app.route('/move', methods=['POST'])
+def move():
+    src = request.form.get('src')
+    dst = request.form.get('dst')
+    if not src or not dst:
+        abort(400, description='Dados inválidos.')
+
+    full_src = secure_path(src)
+    full_dst = secure_path(dst)
+
+    if os.path.isdir(full_dst):
+        new_location = os.path.join(full_dst, os.path.basename(full_src))
+    else:
+        new_location = full_dst
+
+    try:
+        shutil.move(full_src, new_location)
+    except Exception as e:
+        abort(500, description=str(e))
+    return ('', 204)
+
+@app.route('/preview/<path:file_path>')
+def preview(file_path):
+    full_path = secure_path(file_path)
+    if not os.path.exists(full_path):
+        abort(404)
+
+    try:
+        with open(full_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return jsonify({ 'name': os.path.basename(full_path), 'content': content })
+    except Exception:
+        return jsonify({ 'error': 'Não é possível visualizar este arquivo.' }), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, threaded=True)
