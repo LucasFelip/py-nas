@@ -178,24 +178,24 @@ def preview(file_path):
             })
 
         # Arquivo CSV
-        elif ext == '.csv':
-            df = pd.read_csv(full_path)
-            return jsonify({
-                'type': 'table',
-                'name': os.path.basename(full_path),
-                'headers': list(map(str, df.columns)),
-                'rows': df.fillna('').astype(str).values.tolist()
-            })
+        #elif ext == '.csv':
+        #    df = pd.read_csv(full_path)
+        #    return jsonify({
+        #        'type': 'table',
+        #        'name': os.path.basename(full_path),
+        #        'headers': list(map(str, df.columns)),
+        #        'rows': df.fillna('').astype(str).values.tolist()
+        #    })
 
         # Arquivo XLSX
-        elif ext == '.xlsx':
-            df = pd.read_excel(full_path, engine='openpyxl')
-            return jsonify({
-                'type': 'table',
-                'name': os.path.basename(full_path),
-                'headers': list(map(str, df.columns)),
-                'rows': df.fillna('').astype(str).values.tolist()
-            })
+        #elif ext == '.xlsx':
+        #    df = pd.read_excel(full_path, engine='openpyxl')
+         #   return jsonify({
+          #      'type': 'table',
+          #      'name': os.path.basename(full_path),
+          #      'headers': list(map(str, df.columns)),
+           #     'rows': df.fillna('').astype(str).values.tolist()
+          #  })
 
         # Arquivo DOCX
         elif ext == '.docx':
