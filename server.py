@@ -4,7 +4,6 @@ from datetime import datetime
 import os
 import shutil
 import mimetypes
-from docx import Document
 
 # Configurações
 ROOT_FOLDER = '/data/data/com.termux/files/home/storage/shared/NAS'
@@ -197,14 +196,14 @@ def preview(file_path):
           #  })
 
         # Arquivo DOCX
-        elif ext == '.docx':
-            doc = Document(full_path)
-            content = '\n'.join([p.text for p in doc.paragraphs if p.text.strip()])
-            return jsonify({
-                'type': 'text',
-                'name': os.path.basename(full_path),
-                'content': content
-            })
+        #elif ext == '.docx':
+       #     doc = Document(full_path)
+        #    content = '\n'.join([p.text for p in doc.paragraphs if p.text.strip()])
+         #   return jsonify({
+          #      'type': 'text',
+           #     'name': os.path.basename(full_path),
+            #    'content': content
+            #})
 
         # Arquivo PDF
         elif ext == '.pdf':
