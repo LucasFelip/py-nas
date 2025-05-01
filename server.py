@@ -4,7 +4,6 @@ from datetime import datetime
 import os
 import shutil
 import mimetypes
-import pandas as pd
 from docx import Document
 
 # Configurações
